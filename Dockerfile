@@ -31,7 +31,7 @@ WORKDIR /app
 COPY . /app
 
 # 安裝 Flask 及必要套件
-RUN pip install flask werkzeug gitpython shortuuid requests
+RUN pip install flask werkzeug gitpython shortuuid requests flask-cors
 
 # 安裝 Git（Cloud Run 容器預設沒有）
 RUN apt-get update && apt-get install -y git

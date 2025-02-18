@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
 import zipfile
 import shortuuid
@@ -6,6 +7,7 @@ import git
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "https://damaiapp.github.io"}})
 
 # 設定 GitHub Pages Repo
 GITHUB_REPO = "DamaiApp/damaiapp.github.io"
@@ -14,6 +16,17 @@ GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")  # 用環境變數
 
 UPLOAD_FOLDER = "/tmp/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "https://damaiapp.github.io"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
+
+@app.route("/upload", methods=["OPTIONS"])
+def handle_options():
+    return '', 204  # CORS 預檢請求，回應 204 No Content
 
 @app.route("/status/<project_id>", methods=["GET"])
 def check_deployment_status(project_id):
